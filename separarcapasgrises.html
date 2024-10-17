@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Separar Imagen en Capas</title>
+</head>
+<body>
+    <canvas id="canvas" width="1366" height="768"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+       img.crossOrigin = 'Anonymous'; // Agregado por el error Permitir acceso a datos de imagen de origen cruzado
+        img.src = 'imagen.jpg'; // Reemplaza con la ruta de tu imagen
+
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            const layer1 = ctx.createImageData(canvas.width, canvas.height);
+            const layer2 = ctx.createImageData(canvas.width, canvas.height);
+            const layer3 = ctx.createImageData(canvas.width, canvas.height);
+
+            for (let i = 0; i < data.length; i += 4) {
+                const grayscale = data[i]; // Asumiendo que la imagen ya está en escala de grises
+
+                if (grayscale < 85) {
+                    layer1.data[i] = grayscale;
+                    layer1.data[i + 1] = grayscale;
+                    layer1.data[i + 2] = grayscale;
+                    layer1.data[i + 3] = data[i + 3];
+                } else if (grayscale < 170) {
+                    layer2.data[i] = grayscale;
+                    layer2.data[i + 1] = grayscale;
+                    layer2.data[i + 2] = grayscale;
+                    layer2.data[i + 3] = data[i + 3];
+                } else {
+                    layer3.data[i] = grayscale;
+                    layer3.data[i + 1] = grayscale;
+                    layer3.data[i + 2] = grayscale;
+                    layer3.data[i + 3] = data[i + 3];
+                }
+            }
+
+            // Dibujar las capas en diferentes posiciones
+            ctx.putImageData(layer1, 0, 0);
+            ctx.putImageData(layer2, canvas.width / 2, 0);
+            ctx.putImageData(layer3, 0, canvas.height / 2);
+        };
+    </script>
+</body>
+</html>
