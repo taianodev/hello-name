@@ -2,111 +2,52 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi   
- Portafolio</title>
-
+    <title>Separar Imagen en Capas</title>
 </head>
 <body>
-    <header>
-        <h1>Mi Portafolio</h1>
-        <nav>
-            <ul>
-                <li><a href="#acerca-de">Acerca   
- de</a></li>
-                <li><a href="#habilidades">Habilidades</a></li>
-                <li><a href="#proyectos">Proyectos</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </nav>
-    </header>   
+    <canvas id="canvas" width="1366" height="768"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+       img.crossOrigin = 'Anonymous'; // Agregado por el error Permitir acceso a datos de imagen de origen cruzado
+        img.src = 'imagen.jpg'; // Reemplaza con la ruta de tu imagen
 
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
 
-    <section id="acerca-de">
-        <h2>Acerca de Mí</h2>
-        <p>Soy un desarrollador full-stack con experiencia en diversas tecnologías. Mi pasión es crear soluciones web innovadoras y eficientes.</p>
-        <img src="mi-foto.jpg" alt="Mi foto">
-    </section>
+            const layer1 = ctx.createImageData(canvas.width, canvas.height);
+            const layer2 = ctx.createImageData(canvas.width, canvas.height);
+            const layer3 = ctx.createImageData(canvas.width, canvas.height);
 
-    <section id="habilidades">
-        <h2>Habilidades</h2>
-        <ul>
-            <li>HTML, CSS, JavaScript</li>
-            <li>Node.js, Express, MongoDB, MySQL</li>
-            <li>Python</li>
-            <li>Librerías de Express (especificar las que usaste)</li>
-            <li>Reconocimiento facial</li>
-            <li>Menús con seguimiento de ojos</li>
-            </ul>
-    </section>
-<section id="proyectos">
-  <h2>Proyectos</h2>
-  <div class="proyecto">
-    <h3>Plataformas de Subastas</h3>
-    <p>Desarrollo de plataformas web y móviles para subastas de automóviles, inmuebles y otros bienes, incluyendo funcionalidades de streaming en vivo, seguimiento de pujas en tiempo real y módulos personalizados para diferentes roles (rematador, comprador, auditor).</p>
-    <ul>
-      <li><strong>Tecnologías:</strong> Node.js, Express, MongoDB, MySQL, PHP, React, Socket.IO, reconocimiento facial, seguimiento ocular</li>
-      <li><strong>Características destacadas:</strong> Subastas en vivo, pujas en tiempo real, módulos personalizados, integración de pasarelas de pago</li>
-    </ul>
-  </div>
+            for (let i = 0; i < data.length; i += 4) {
+                const grayscale = data[i]; // Asumiendo que la imagen ya está en escala de grises
 
-  <div class="proyecto">
-    <h3>Aplicaciones para Agencias de Ventas de Automotores</h3>
-    <p>Desarrollo de aplicaciones web y móviles para la gestión de inventario, ventas y marketing de automóviles. Integración con sistemas de gestión de concesionarios.</p>
-    <ul>
-      <li><strong>Tecnologías:</strong> PHP, MySQL, Node.js, Express, React Native</li>
-      <li><strong>Características destacadas:</strong> Gestión de inventario, CRM, generación de reportes</li>
-    </ul>
-  </div>
+                if (grayscale < 85) {
+                    layer1.data[i] = grayscale;
+                    layer1.data[i + 1] = grayscale;
+                    layer1.data[i + 2] = grayscale;
+                    layer1.data[i + 3] = data[i + 3];
+                } else if (grayscale < 170) {
+                    layer2.data[i] = grayscale;
+                    layer2.data[i + 1] = grayscale;
+                    layer2.data[i + 2] = grayscale;
+                    layer2.data[i + 3] = data[i + 3];
+                } else {
+                    layer3.data[i] = grayscale;
+                    layer3.data[i + 1] = grayscale;
+                    layer3.data[i + 2] = grayscale;
+                    layer3.data[i + 3] = data[i + 3];
+                }
+            }
 
-  </section>
-
-<section id="proyectosdetallada">
-<div class="proyecto">
-  <h3>Plataforma de Subastas Online</h3>
-  <p>Desarrollé una plataforma de subastas online utilizando Node.js, Express, MongoDB y React. Fui responsable del backend, incluyendo la implementación de un sistema de tiempo real para las subastas y la integración de pasarelas de pago. La plataforma fue utilizada por [Nombre de la empresa] y permitió aumentar las ventas en un 20%.</p>
-  <ul>
-    <li><strong>Tecnologías:</strong> Node.js 16, Express 4, MongoDB, React, Socket.IO, Stripe</li>
-    <li><strong>Responsabilidades:</strong> Desarrollo backend, diseño de la arquitectura, implementación de la lógica de negocio</li>
-    <li><strong>Resultados:</strong> Aumento del 20% en el número de usuarios y un 15% en el valor total de las subastas.</li>
-  </ul>
-  <a href="https://github.com/tu-usuario/subastas" target="_blank">Ver código</a>
-  <a href="https://tu-proyecto.com" target="_blank">Demo en vivo</a>
-</div>
-</section>
-<section id="proyectoagencia">
-<div class="proyecto">
-  <h3>Aplicaciones para Agencias de Ventas de Automotores</h3>
-  <p>Desarrollé aplicaciones web y móviles personalizadas para optimizar las operaciones de agencias de venta de automóviles. Estas soluciones incluyeron:</p>
-  <ul>
-    <li><strong>Gestión de inventario:</strong> Catálogo detallado de vehículos, seguimiento de stock, alertas de baja disponibilidad.</li>
-    <li><strong>CRM:</strong> Gestión de clientes potenciales, seguimiento de ventas, historial de interacciones.</li>
-    <li><strong>Ventas en línea:</strong> Plataformas de comercio electrónico para la venta de vehículos nuevos y usados.</li>
-    <li><strong>Integración con sistemas externos:</strong> Conexión con sistemas de financiamiento, seguros y gestoría vehicular.</li>
-  </ul>
-  <p>Estas aplicaciones permitieron a las agencias mejorar la eficiencia de sus procesos, aumentar las ventas y brindar una mejor experiencia al cliente.</p>
-  <img src="agencias_autos.jpg" alt="Ejemplo de una interfaz de usuario para una aplicación de agencia de autos">
-  <p><strong>Tecnologías utilizadas:</strong> PHP, MySQL, Node.js, Express, React, React Native</p>
-</div>
- </section>
-
-
-    <section id="proyectos2">
-        <h2>Proyectos</h2>
-        <div class="proyecto">
-            <h3>Aplicaciones para Agencias de Ventas de Automotores</h3>
-            <p>Desarrollo de aplicaciones web para gestión de inventario, ventas y marketing.</p>
-            <img src="imagen.jpg" alt="Proyecto 1">
-        </div>
-        </section>
-
-    <section id="contacto">
-        <h2>Contacto</h2>
-        <p>Si estás interesado en trabajar conmigo, no dudes en contactarme.</p>
-        <form>
-            </form>
-    </section>
-
-
+            // Dibujar las capas en diferentes posiciones
+            ctx.putImageData(layer1, 0, 0);
+            ctx.putImageData(layer2, canvas.width / 2, 0);
+            ctx.putImageData(layer3, 0, canvas.height / 2);
+        };
+    </script>
 </body>
 </html>
